@@ -1,0 +1,31 @@
+@if (tasks().length === 0) {
+  <p class="text-sm text-gray-500 italic py-2">Aucune tâche.</p>
+} @else {
+  <div class="space-y-3">
+    <!-- Notice the parentheses: tasks() instead of tasks -->
+    @for (task of tasks(); track task.id) {
+      <div class="bg-white border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:shadow transition">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-mono text-gray-400">#{{ task.id }}</span>
+          <h4 class="font-medium text-gray-800 text-sm">{{ task.title }}</h4>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <span 
+            class="text-xs font-medium px-2.5 py-1 rounded-md border"
+            [ngClass]="getPriorityClasses(task.priority)"
+          >
+            {{ task.priority }}
+          </span>
+
+          <span 
+            class="text-xs font-semibold px-2.5 py-1 rounded-full border"
+            [ngClass]="getStatusClasses(task.status)"
+          >
+            {{ task.status }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+}

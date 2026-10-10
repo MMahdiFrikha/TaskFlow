@@ -1,0 +1,31 @@
+<div class="p-6 max-w-7xl mx-auto">
+  <!-- Barre de recherche -->
+  <div class="mb-6">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      placeholder="Rechercher un projet..." 
+      class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+    />
+  </div>
+
+  <!-- Indication du projet sélectionné -->
+  @if (selectedProject) {
+    <div class="mb-6 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg flex items-center justify-between">
+      <span>Projet sélectionné : <strong>{{ selectedProject.name }}</strong></span>
+      <button (click)="selectedProject = null" class="text-xs text-blue-600 underline">Fermer</button>
+    </div>
+  }
+
+  <!-- Grille des projets filtrés -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (proj of filteredProjects; track proj.id) {
+      <app-project-card 
+        [project]="proj" 
+        (projectSelected)="onProjectSelected($event)"
+      ></app-project-card>
+    } @empty {
+      <p class="text-gray-500 col-span-full italic">Aucun projet trouvé.</p>
+    }
+  </div>
+</div>
