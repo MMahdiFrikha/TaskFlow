@@ -1,26 +1,30 @@
 @if (tasks().length === 0) {
-  <p class="text-sm text-gray-500 italic py-2">Aucune tâche.</p>
+  <p class="text-sm text-gray-400 italic py-2">Aucune tâche enregistrée.</p>
 } @else {
-  <div class="space-y-3">
-    <!-- Notice the parentheses: tasks() instead of tasks -->
+  <div class="space-y-2.5">
     @for (task of tasks(); track task.id) {
-      <div class="bg-white border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:shadow transition">
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-mono text-gray-400">#{{ task.id }}</span>
-          <h4 class="font-medium text-gray-800 text-sm">{{ task.title }}</h4>
+      <div 
+        class="bg-white rounded-r-lg border border-y border-r p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-colors hover:bg-slate-50/50"
+        [ngClass]="getStatusTheme(task.status).cardBorder"
+      >
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <span class="text-[11px] font-mono font-medium text-gray-400 shrink-0">#{{ task.id }}</span>
+          <span class="text-xs font-medium text-gray-800 truncate">{{ task.title }}</span>
         </div>
 
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+          <!-- Badge Priorité -->
           <span 
-            class="text-xs font-medium px-2.5 py-1 rounded-md border"
+            class="text-[10px] font-semibold px-2 py-0.5 rounded border"
             [ngClass]="getPriorityClasses(task.priority)"
           >
             {{ task.priority }}
           </span>
 
+          <!-- Badge Statut -->
           <span 
-            class="text-xs font-semibold px-2.5 py-1 rounded-full border"
-            [ngClass]="getStatusClasses(task.status)"
+            class="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
+            [ngClass]="getStatusTheme(task.status).badge"
           >
             {{ task.status }}
           </span>

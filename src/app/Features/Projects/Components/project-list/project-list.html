@@ -1,31 +1,38 @@
-<div class="p-6 max-w-7xl mx-auto">
+<div class="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
   <!-- Barre de recherche -->
-  <div class="mb-6">
+  <div class="w-full max-w-md">
     <input 
       type="text" 
       [(ngModel)]="searchTerm" 
       placeholder="Rechercher un projet..." 
-      class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+      class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-300 rounded-xl shadow-xs text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
     />
   </div>
 
   <!-- Indication du projet sélectionné -->
   @if (selectedProject) {
-    <div class="mb-6 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg flex items-center justify-between">
-      <span>Projet sélectionné : <strong>{{ selectedProject.name }}</strong></span>
-      <button (click)="selectedProject = null" class="text-xs text-blue-600 underline">Fermer</button>
+    <div class="p-4 bg-blue-50/70 border border-blue-200 text-blue-900 text-sm rounded-xl flex items-center justify-between shadow-xs">
+      <span>Projet sélectionné : <strong class="font-semibold">{{ selectedProject.name }}</strong></span>
+      <button 
+        (click)="selectedProject = null" 
+        class="text-xs font-medium text-blue-700 hover:text-blue-900 underline cursor-pointer"
+      >
+        Réinitialiser
+      </button>
     </div>
   }
 
-  <!-- Grille des projets filtrés -->
+  <!-- Grille : Notice filteredProjects() appelé en tant que Signal -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (proj of filteredProjects; track proj.id) {
+    @for (project of filteredProjects(); track project.id) {
       <app-project-card 
-        [project]="proj" 
+        [project]="project" 
         (projectSelected)="onProjectSelected($event)"
       ></app-project-card>
     } @empty {
-      <p class="text-gray-500 col-span-full italic">Aucun projet trouvé.</p>
+      <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-dashed border-gray-300">
+        <p class="text-sm text-gray-500 font-medium">Aucun projet ne correspond à votre recherche.</p>
+      </div>
     }
   </div>
 </div>

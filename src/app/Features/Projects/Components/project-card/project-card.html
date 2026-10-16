@@ -1,35 +1,57 @@
-<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between h-full">
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col justify-between h-full">
   <div>
-    <!-- Interpolation : Nom et Statut -->
-    <div class="flex items-start justify-between gap-3 mb-2">
-      <h3 class="text-lg font-bold text-gray-900">{{ project().name }}</h3>
-      <span class="text-xs font-semibold px-2.5 py-1 rounded-full border bg-slate-50 text-slate-700">
+    <!-- Entête de la carte : Titre et statut distinct -->
+    <div class="flex items-start justify-between gap-3 mb-3">
+      <h3 class="text-lg font-bold text-gray-900 tracking-tight leading-snug">
+        {{ project().name }}
+      </h3>
+
+      <!-- Différenciation du statut du projet -->
+      <span 
+        class="text-xs font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap shrink-0"
+        [class.bg-amber-50]="project().status === 'En attente'"
+        [class.text-amber-700]="project().status === 'En attente'"
+        [class.border-amber-200]="project().status === 'En attente'"
+        [class.bg-blue-50]="project().status === 'En cours'"
+        [class.text-blue-700]="project().status === 'En cours'"
+        [class.border-blue-200]="project().status === 'En cours'"
+        [class.bg-emerald-50]="project().status === 'Terminé'"
+        [class.text-emerald-700]="project().status === 'Terminé'"
+        [class.border-emerald-200]="project().status === 'Terminé'"
+      >
         {{ project().status }}
       </span>
     </div>
 
-    <!-- Interpolation : Description -->
-    <p class="text-sm text-gray-600 mb-5">
+    <!-- Description -->
+    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
       {{ project().description }}
     </p>
 
-    <!-- Intégration de TaskList via Property Binding -->
+    <!-- Section des tâches -->
     <div class="border-t border-gray-100 pt-4">
-      <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
-        Tâches ({{ project().tasks.length }})
-      </h4>
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          Tâches associées
+        </h4>
+        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+          {{ project().tasks.length }}
+        </span>
+      </div>
+
+      <!-- Composant TaskList -->
       <app-task-list [tasks]="project().tasks"></app-task-list>
     </div>
   </div>
 
-  <!-- Event Binding : Bouton Sélectionner -->
+  <!-- Pied de carte : Action -->
   <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end">
     <button 
       type="button" 
       (click)="selectProject()"
-      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition"
+      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-xs hover:shadow transition-all cursor-pointer"
     >
-      Sélectionner
+      Sélectionner le projet
     </button>
   </div>
 </div>
