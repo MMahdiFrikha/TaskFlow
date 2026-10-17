@@ -1,55 +1,79 @@
-<div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col justify-between h-full">
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between h-full">
   <div>
-    <!-- Entête de la carte : Titre et statut distinct -->
-    <div class="flex items-start justify-between gap-3 mb-3">
-      <h3 class="text-lg font-bold text-gray-900 tracking-tight leading-snug">
-        {{ project().name }}
+    <!-- Entête : Nom en majuscules + Statut -->
+    <div class="flex items-start justify-between gap-3 mb-2">
+      <!-- 1. Pipe uppercase -->
+      <h3 class="text-base font-bold text-gray-900 tracking-tight">
+        {{ project().name | uppercase }}
       </h3>
-
-      <!-- Différenciation du statut du projet -->
-      <span 
-        class="text-xs font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap shrink-0"
-        [class.bg-amber-50]="project().status === 'En attente'"
-        [class.text-amber-700]="project().status === 'En attente'"
-        [class.border-amber-200]="project().status === 'En attente'"
-        [class.bg-blue-50]="project().status === 'En cours'"
-        [class.text-blue-700]="project().status === 'En cours'"
-        [class.border-blue-200]="project().status === 'En cours'"
-        [class.bg-emerald-50]="project().status === 'Terminé'"
-        [class.text-emerald-700]="project().status === 'Terminé'"
-        [class.border-emerald-200]="project().status === 'Terminé'"
-      >
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full border bg-slate-50 text-slate-700 shrink-0">
         {{ project().status }}
       </span>
     </div>
 
+    <!-- Date de début et Budget -->
+    <div class="flex flex-wrap gap-y-1 gap-x-4 text-xs text-gray-500 mb-3">
+      <!-- 2. Pipe date formaté en jour mois complet année -->
+      <span>Début : <strong class="text-gray-700">{{ project().startDate | date:'dd MMMM yyyy' }}</strong></span>
+
+      <!-- 3. Pipe currency en TND avec 2 décimales -->
+      <span>Budget : <strong class="text-gray-700">{{ project().budget | currency:'TND':'symbol':'1.2-2' }}</strong></span>
+    </div>
+
     <!-- Description -->
-    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
       {{ project().description }}
     </p>
 
-    <!-- Section des tâches -->
+    <!-- Métriques : Taux d'achèvement et Coût moyen avec garde anti-division par zéro -->
+    @if (project().tasks.length > 0) {
+      <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl mb-4 text-xs">
+        <div>
+          <span class="text-gray-500 block">Réalisation</span>
+          <!-- 4. Pipe percent sans décimales -->
+          <strong class="text-gray-800 font-semibold">{{ completionRate() | percent:'1.0-0' }}</strong>
+        </div>
+        <div>
+          <span class="text-gray-500 block">Coût moyen / tâche</span>
+          <!-- 5. Pipe number arrondi à l'entier -->
+          <strong class="text-gray-800 font-semibold">{{ averageCostPerTask() | number:'1.0-0' }} TND</strong>
+        </div>
+      </div>
+    }
+
+    <!-- 6. Décompte par priorité avec le pipe keyvalue -->
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Priorités :</span>
+      <div class="flex gap-1.5 flex-wrap">
+        @for (entry of taskCountByPriority() | keyvalue; track entry.key) {
+          <span class="text-[11px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
+            {{ entry.key }} : <strong>{{ entry.value }}</strong>
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- 7. Section des tâches avec conteneur défilant à hauteur fixe -->
     <div class="border-t border-gray-100 pt-4">
       <div class="flex items-center justify-between mb-3">
         <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
-          Tâches associées
+          Toutes les tâches ({{ project().tasks.length }})
         </h4>
-        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-          {{ project().tasks.length }}
-        </span>
       </div>
-
-      <!-- Composant TaskList -->
-      <app-task-list [tasks]="project().tasks"></app-task-list>
+      
+      <!-- Zone de défilement vertical sans impacter la hauteur externe de la carte -->
+      <div class="max-h-56 overflow-y-auto pr-1">
+        <app-task-list [tasks]="project().tasks"></app-task-list>
+      </div>
     </div>
   </div>
 
-  <!-- Pied de carte : Action -->
+  <!-- Action : Bouton de sélection -->
   <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end">
     <button 
       type="button" 
       (click)="selectProject()"
-      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-xs hover:shadow transition-all cursor-pointer"
+      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-xs transition cursor-pointer"
     >
       Sélectionner le projet
     </button>

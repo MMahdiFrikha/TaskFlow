@@ -1,4 +1,4 @@
-import { Task } from '../Task/task.model';
+import { Task, ISODateString } from '../Task/task.model';
 
 export type ProjectStatus = 'En attente' | 'En cours' | 'Terminé';
 
@@ -7,5 +7,7 @@ export interface Project {
   name: string;
   description: string;
   status: ProjectStatus;
+  startDate: ISODateString;    
+  budget: number;              
   tasks: Task[];
 }
