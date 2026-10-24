@@ -1,7 +1,7 @@
 import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Project } from '../../Models/Project/project.model';
-import { TaskPriority } from '../../Models/Task/task.model';
+import { Project } from '../../Models/project.model';
+import { TaskPriority } from '../../Models/task.model';
 import { TaskList } from '../task-list/task-list';
 
 @Component({

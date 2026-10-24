@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Task, TaskPriority, TaskStatus } from '../../Models/Task/task.model';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Task, TaskPriority, TaskStatus } from '../../Models/task.model';
 
 @Component({
   selector: 'app-task-list',

@@ -1,4 +1,4 @@
-import { Task, ISODateString } from '../Task/task.model';
+import { Task, ISODateString } from './task.model';
 
 export type ProjectStatus = 'En attente' | 'En cours' | 'Terminé';
 
