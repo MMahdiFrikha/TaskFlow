@@ -1,11 +1,19 @@
 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between h-full">
   <div>
-    <!-- Entête : Nom en majuscules + Statut -->
+    <!-- Entête : Avatar avec Initiales + Nom en majuscules + Statut -->
     <div class="flex items-start justify-between gap-3 mb-2">
-      <!-- 1. Pipe uppercase -->
-      <h3 class="text-base font-bold text-gray-900 tracking-tight">
-        {{ project().name | uppercase }}
-      </h3>
+      <div class="flex items-center gap-3">
+        <!-- InitialsPipe -->
+        <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs tracking-wider shrink-0 select-none shadow-xs border border-blue-200">
+          {{ project().name | initials }}
+        </div>
+
+        <!-- Pipe uppercase -->
+        <h3 class="text-base font-bold text-gray-900 tracking-tight">
+          {{ project().name | uppercase }}
+        </h3>
+      </div>
+
       <span class="text-xs font-semibold px-2.5 py-1 rounded-full border bg-slate-50 text-slate-700 shrink-0">
         {{ project().status }}
       </span>
@@ -13,35 +21,68 @@
 
     <!-- Date de début et Budget -->
     <div class="flex flex-wrap gap-y-1 gap-x-4 text-xs text-gray-500 mb-3">
-      <!-- 2. Pipe date formaté en jour mois complet année -->
+      <!-- Pipe date -->
       <span>Début : <strong class="text-gray-700">{{ project().startDate | date:'dd MMMM yyyy' }}</strong></span>
 
-      <!-- 3. Pipe currency en TND avec 2 décimales -->
+      <!-- Pipe currency en TND -->
       <span>Budget : <strong class="text-gray-700">{{ project().budget | currency:'TND':'symbol':'1.2-2' }}</strong></span>
     </div>
 
     <!-- Description -->
-    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+    <p class="text-sm text-gray-600 mb-3 leading-relaxed">
       {{ project().description }}
     </p>
 
-    <!-- Métriques : Taux d'achèvement et Coût moyen avec garde anti-division par zéro -->
+    <!-- Message d'avancement conditionnel (@if / @else if / @else) -->
+    <div class="mb-3">
+      @if (project().tasks.length === 0) {
+        <span class="inline-flex items-center text-xs font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
+          Aucune tâche pour le moment
+        </span>
+      } @else if (completionRate() === 1) {
+        <span class="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+          ✓ Projet terminé
+        </span>
+      } @else if (completionRate() > 0) {
+        <span class="inline-flex items-center text-xs font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+          ⏳ En progression
+        </span>
+      } @else {
+        <span class="inline-flex items-center text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
+          ⏸ Pas encore démarré
+        </span>
+      }
+    </div>
+
+    <!-- Métriques & Barre de progression avec ngStyle -->
     @if (project().tasks.length > 0) {
-      <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl mb-4 text-xs">
-        <div>
-          <span class="text-gray-500 block">Réalisation</span>
-          <!-- 4. Pipe percent sans décimales -->
-          <strong class="text-gray-800 font-semibold">{{ completionRate() | percent:'1.0-0' }}</strong>
+      <div class="p-3 bg-slate-50 rounded-xl mb-4 space-y-2">
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="text-gray-500 block">Réalisation</span>
+            <strong class="text-gray-800 font-semibold">{{ completionRate() | percent:'1.0-0' }}</strong>
+          </div>
+          <div>
+            <span class="text-gray-500 block">Coût moyen / tâche</span>
+            <strong class="text-gray-800 font-semibold">{{ averageCostPerTask() | number:'1.0-0' }} TND</strong>
+          </div>
         </div>
-        <div>
-          <span class="text-gray-500 block">Coût moyen / tâche</span>
-          <!-- 5. Pipe number arrondi à l'entier -->
-          <strong class="text-gray-800 font-semibold">{{ averageCostPerTask() | number:'1.0-0' }} TND</strong>
+
+        <!-- Conteneur gris (w-full bg-gray-200 rounded-full h-2) -->
+        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <!-- Barre (h-2 rounded-full) stylisée avec ngStyle -->
+          <div 
+            class="h-2 rounded-full transition-all duration-300"
+            [ngStyle]="{
+              'width': (completionRate() * 100) + '%',
+              'background-color': barColor
+            }"
+          ></div>
         </div>
       </div>
     }
 
-    <!-- 6. Décompte par priorité avec le pipe keyvalue -->
+    <!-- Décompte par priorité (pipe keyvalue) -->
     <div class="flex items-center gap-2 mb-4">
       <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Priorités :</span>
       <div class="flex gap-1.5 flex-wrap">
@@ -53,7 +94,7 @@
       </div>
     </div>
 
-    <!-- 7. Section des tâches avec conteneur défilant à hauteur fixe -->
+    <!-- Section des tâches avec défilement vertical -->
     <div class="border-t border-gray-100 pt-4">
       <div class="flex items-center justify-between mb-3">
         <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -61,14 +102,13 @@
         </h4>
       </div>
       
-      <!-- Zone de défilement vertical sans impacter la hauteur externe de la carte -->
       <div class="max-h-56 overflow-y-auto pr-1">
         <app-task-list [tasks]="project().tasks"></app-task-list>
       </div>
     </div>
   </div>
 
-  <!-- Action : Bouton de sélection -->
+  <!-- Bouton d'action -->
   <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end">
     <button 
       type="button" 

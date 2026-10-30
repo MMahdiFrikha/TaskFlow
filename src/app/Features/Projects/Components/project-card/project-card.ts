@@ -2,12 +2,13 @@ import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Project } from '../../Models/project.model';
 import { TaskPriority } from '../../Models/task.model';
+import { InitialsPipe } from '../../shared/pipes/initials-pipe';
 import { TaskList } from '../task-list/task-list';
 
 @Component({
   selector: 'app-project-card',
   standalone: true,
-  imports: [CommonModule, TaskList],
+  imports: [CommonModule, TaskList, InitialsPipe],
   templateUrl: './project-card.html',
   styleUrl: './project-card.css'
 })
@@ -44,6 +45,16 @@ export class ProjectCard {
     }
     return counts;
   });
+
+  get barColor(): string {
+    const percentage = this.completionRate() * 100;
+    if (percentage < 34) {
+      return '#ef4444'; // Rouge
+    } else if (percentage <= 66) {
+      return '#f59e0b'; // Orange
+    }
+    return '#22c55e'; // Vert
+  }
 
   selectProject(): void {
     this.projectSelected.emit(this.project());

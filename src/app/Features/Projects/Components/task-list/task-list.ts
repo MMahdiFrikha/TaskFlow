@@ -1,18 +1,19 @@
 import { Component, input } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Task, TaskPriority, TaskStatus } from '../../Models/task.model';
+import { TruncatePipe } from '../../shared/pipes/truncate-pipe'; 
+import { DeadlinePipe } from '../../shared/pipes/deadline-pipe';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TruncatePipe, DeadlinePipe], // <-- TruncatePipe et DeadlinePipe importés ici
   templateUrl: './task-list.html',
   styleUrl: './task-list.css'
 })
 export class TaskList {
   tasks = input.required<Task[]>();
 
-  // Style de la bordure latérale et des puces selon l'état d'avancement
   getStatusTheme(status: TaskStatus) {
     switch (status) {
       case 'Terminé':
@@ -38,7 +39,6 @@ export class TaskList {
     }
   }
 
-  // Style d'affichage des priorités
   getPriorityClasses(priority: TaskPriority): string {
     switch (priority) {
       case 'Haute':
