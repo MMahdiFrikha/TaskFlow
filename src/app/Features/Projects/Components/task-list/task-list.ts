@@ -3,16 +3,33 @@ import { CommonModule } from '@angular/common';
 import { Task, TaskPriority, TaskStatus } from '../../Models/task.model';
 import { TruncatePipe } from '../../shared/pipes/truncate-pipe'; 
 import { DeadlinePipe } from '../../shared/pipes/deadline-pipe';
+import { InitialsPipe } from '../../shared/pipes/initials-pipe';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, TruncatePipe, DeadlinePipe], // <-- TruncatePipe et DeadlinePipe importés ici
+  imports: [CommonModule, TruncatePipe, DeadlinePipe, InitialsPipe], // <-- Tous les pipes importés ici
   templateUrl: './task-list.html',
   styleUrl: './task-list.css'
 })
 export class TaskList {
   tasks = input.required<Task[]>();
+
+  // 4. Objet de correspondance Priorité -> Couleur HEX (équivalent du rôle -> couleur)
+  priorityColors: Record<TaskPriority, string> = {
+    'Haute': '#ef4444',    // Rouge vif
+    'Moyenne': '#f59e0b',  // Orange
+    'Basse': '#64748b'     // Gris ardoise
+  };
+
+  getPriorityColor(priority: TaskPriority): string {
+    return this.priorityColors[priority] ?? '#94a3b8';
+  }
+
+  // Détermine si la tâche est active (non terminée)
+  isTaskActive(status: TaskStatus): boolean {
+    return status !== 'Terminé';
+  }
 
   getStatusTheme(status: TaskStatus) {
     switch (status) {
