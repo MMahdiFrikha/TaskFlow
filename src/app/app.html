@@ -1,16 +1,20 @@
-<main class="min-h-screen bg-slate-50 text-slate-800">
-  <header class="bg-white border-b border-slate-200 px-8 py-4 shadow-sm">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight">
-        Task<span class="text-blue-600">Flow</span>
-      </h1>
-      <span class="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
-        Dashboard
-      </span>
-    </div>
-  </header>
-
-  <div class="max-w-7xl mx-auto py-8">
+<main class="min-h-screen bg-slate-100 p-6 sm:p-8 space-y-10">
+  <!-- Projects Section -->
+  <section>
     <app-project-list></app-project-list>
-  </div>
+  </section>
+
+  <!-- Team Members Section -->
+  <section class="border-t border-gray-200 pt-8">
+    <div class="mb-4">
+      <h2 class="text-lg font-bold text-gray-900 tracking-tight">Membres de l'équipe</h2>
+      <p class="text-xs text-gray-500">Collaborateurs assignés aux différents projets</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      @for (user of users(); track user.id) {
+        <app-user-card [user]="user"></app-user-card>
+      }
+    </div>
+  </section>
 </main>

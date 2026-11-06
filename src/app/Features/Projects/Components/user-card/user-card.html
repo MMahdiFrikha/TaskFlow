@@ -1,18 +1,34 @@
-<div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-  <!-- Avatar générique provisoire -->
-  <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm">
-    {{ user().name.charAt(0) }}
+<div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center justify-between gap-3">
+  <div class="flex items-center gap-3 overflow-hidden">
+    <!-- ngStyle applied to Initials circle -->
+    <div 
+      class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 select-none shadow-xs"
+      [ngStyle]="{ 'background-color': avatarColor }"
+    >
+      {{ user().name | initials }}
+    </div>
+
+    <!-- titlecase and lowercase pipes -->
+    <div class="overflow-hidden">
+      <h4 class="text-sm font-semibold text-gray-900 truncate">
+        {{ user().name | titlecase }}
+      </h4>
+      <p class="text-xs text-gray-500 truncate">
+        {{ user().email | lowercase }}
+      </p>
+      <span class="text-[10px] font-medium text-gray-400 uppercase tracking-wider block mt-0.5">
+        {{ user().role }}
+      </span>
+    </div>
   </div>
 
-  <div class="overflow-hidden">
-    <!-- 1. Pipe titlecase : première lettre de chaque mot en majuscule -->
-    <h4 class="text-sm font-semibold text-gray-900 truncate">
-      {{ user().name | titlecase }}
-    </h4>
-
-    <!-- 2. Pipe lowercase : email forcé en minuscules -->
-    <p class="text-xs text-gray-500 truncate">
-      {{ user().email | lowercase }}
-    </p>
-  </div>
+  <!-- ngClass applied to Active / Inactive badge -->
+  <span 
+    class="text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0"
+    [ngClass]="user().isActive 
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+      : 'bg-gray-100 text-gray-500 border-gray-200'"
+  >
+    {{ user().isActive ? 'Actif' : 'Inactif' }}
+  </span>
 </div>

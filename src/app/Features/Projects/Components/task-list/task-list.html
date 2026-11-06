@@ -1,92 +1,60 @@
 @if (tasks().length === 0) {
-  <p class="text-sm text-gray-400 italic py-2">Aucune tâche enregistrée.</p>
+  <p class="text-xs text-gray-400 italic py-2">Aucune tâche enregistrée.</p>
 } @else {
-  <div class="space-y-2.5">
+  <div class="space-y-2">
     @for (task of tasks(); track task.id) {
       <div 
         appHighlight
         appOverdue
         [dueDate]="task.dueDate"
         [done]="task.status === 'Terminé'"
-        class="rounded-r-lg border border-y border-r p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-colors"
-        [ngClass]="{
-          'border-l-4 border-l-emerald-500 border-gray-200 bg-white': task.status === 'Terminé',
-          'border-l-4 border-l-blue-500 border-gray-200 bg-white': task.status === 'En cours' && !(task.dueDate && !isTaskActive(task.status)),
-          'border-l-4 border-l-amber-500 border-gray-200 bg-white': task.status === 'En attente'
-        }"
+        class="rounded-r-lg border p-2.5 flex items-center justify-between gap-3 shadow-2xs transition-colors"
+        [ngClass]="getStatusTheme(task.status).cardBorder"
       >
-        <div class="flex items-center gap-3 overflow-hidden">
-          <!-- Pastille d'initiales -->
-          <div 
-            class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-[10px] tracking-wider shrink-0 select-none shadow-xs"
-            [ngStyle]="{ 'background-color': getPriorityColor(task.priority) }"
-          >
-            {{ task.title | initials }}
+        <!-- Task Info -->
+        <div class="flex flex-col gap-0.5 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-mono font-semibold text-gray-400 shrink-0">#{{ task.id }}</span>
+            <span class="text-xs font-semibold text-gray-800 truncate">{{ task.title }}</span>
           </div>
 
-          <div class="flex flex-col gap-0.5 overflow-hidden">
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-mono font-medium text-gray-400 shrink-0">#{{ task.id }}</span>
-              <span class="text-xs font-medium text-gray-800 truncate">{{ task.title }}</span>
-            </div>
+          <!-- Truncated Description with full tooltip on hover -->
+          @if (task.description) {
+            <p 
+              [appTooltip]="task.description"
+              class="text-[11px] text-gray-500 truncate cursor-help hover:text-gray-700 inline-block"
+            >
+              {{ task.description | truncate:35 }}
+            </p>
+          }
 
-            <!-- Description tronquée avec infobulle complète au survol -->
-            @if (task.description) {
-              <p 
-                [appTooltip]="task.description"
-                class="text-[11px] text-gray-500 line-clamp-1 cursor-help hover:text-gray-700 transition-colors"
-              >
-                {{ task.description | truncate:40 }}
-              </p>
+          <!-- Deadline -->
+          <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+            @if (task.dueDate; as date) {
+              <span>{{ date | date:'dd/MM/yyyy' }}</span>
+              <span class="text-gray-300">·</span>
+              <span class="font-medium text-red-600">{{ date | deadline }}</span>
+            } @else {
+              <span class="italic text-gray-400">Aucune échéance</span>
             }
-
-            <!-- Échéance -->
-            <div class="text-[11px] text-gray-500">
-              @if (task.dueDate; as date) {
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="font-medium text-gray-700">{{ date | date:'dd/MM/yyyy' }}</span>
-                  <span class="text-gray-400">·</span>
-                  <span class="font-medium text-red-600">{{ date | deadline }}</span>
-                </div>
-              } @else {
-                <span class="italic text-gray-400">Aucune échéance</span>
-              }
-            </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
-          <!-- Badge Actif / Inactif -->
+        <!-- Badges on right -->
+        <div class="flex items-center gap-1.5 shrink-0">
           <span 
-            class="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
-            [ngClass]="isTaskActive(task.status) 
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-              : 'bg-gray-100 text-gray-500 border-gray-200'"
-          >
-            {{ isTaskActive(task.status) ? 'Actif' : 'Inactif' }}
-          </span>
-
-          <!-- Badge Priorité -->
-          <span 
-            class="text-[10px] font-semibold px-2 py-0.5 rounded border"
+            class="text-[10px] font-medium px-1.5 py-0.5 rounded border"
             [ngClass]="getPriorityClasses(task.priority)"
           >
             @switch (task.priority) {
-              @case ('Haute') {
-                ▲ Haute
-              }
-              @case ('Moyenne') {
-                ● Moyenne
-              }
-              @default {
-                ▼ Basse
-              }
+              @case ('Haute') { ▲ Haute }
+              @case ('Moyenne') { ● Moyenne }
+              @default { ▼ Basse }
             }
           </span>
 
-          <!-- Badge Statut -->
           <span 
-            class="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
+            class="text-[10px] font-medium px-2 py-0.5 rounded-full border"
             [ngClass]="getStatusTheme(task.status).badge"
           >
             {{ task.status }}
