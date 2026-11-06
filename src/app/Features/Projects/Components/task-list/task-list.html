@@ -4,15 +4,19 @@
   <div class="space-y-2.5">
     @for (task of tasks(); track task.id) {
       <div 
-        class="bg-white rounded-r-lg border border-y border-r p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-colors hover:bg-slate-50/50"
+        appHighlight
+        appOverdue
+        [dueDate]="task.dueDate"
+        [done]="task.status === 'Terminé'"
+        class="rounded-r-lg border border-y border-r p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-colors"
         [ngClass]="{
-          'border-l-4 border-l-emerald-500 border-gray-200': task.status === 'Terminé',
-          'border-l-4 border-l-blue-500 border-gray-200': task.status === 'En cours',
-          'border-l-4 border-l-amber-500 border-gray-200': task.status === 'En attente'
+          'border-l-4 border-l-emerald-500 border-gray-200 bg-white': task.status === 'Terminé',
+          'border-l-4 border-l-blue-500 border-gray-200 bg-white': task.status === 'En cours' && !(task.dueDate && !isTaskActive(task.status)),
+          'border-l-4 border-l-amber-500 border-gray-200 bg-white': task.status === 'En attente'
         }"
       >
         <div class="flex items-center gap-3 overflow-hidden">
-          <!-- 4. Pastille d'initiales colorée avec ngStyle selon la priorité -->
+          <!-- Pastille d'initiales -->
           <div 
             class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-[10px] tracking-wider shrink-0 select-none shadow-xs"
             [ngStyle]="{ 'background-color': getPriorityColor(task.priority) }"
@@ -26,14 +30,17 @@
               <span class="text-xs font-medium text-gray-800 truncate">{{ task.title }}</span>
             </div>
 
-            <!-- Description tronquée -->
+            <!-- Description tronquée avec infobulle complète au survol -->
             @if (task.description) {
-              <p class="text-[11px] text-gray-500 line-clamp-1">
+              <p 
+                [appTooltip]="task.description"
+                class="text-[11px] text-gray-500 line-clamp-1 cursor-help hover:text-gray-700 transition-colors"
+              >
                 {{ task.description | truncate:40 }}
               </p>
             }
 
-            <!-- Échéance avec as -->
+            <!-- Échéance -->
             <div class="text-[11px] text-gray-500">
               @if (task.dueDate; as date) {
                 <div class="flex items-center gap-1.5 flex-wrap">
@@ -49,7 +56,7 @@
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
-          <!-- 3. Badge Actif / Inactif géré dynamiquement avec ngClass (vert si active, gris sinon) -->
+          <!-- Badge Actif / Inactif -->
           <span 
             class="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
             [ngClass]="isTaskActive(task.status) 
@@ -59,7 +66,7 @@
             {{ isTaskActive(task.status) ? 'Actif' : 'Inactif' }}
           </span>
 
-          <!-- Priorité avec @switch -->
+          <!-- Badge Priorité -->
           <span 
             class="text-[10px] font-semibold px-2 py-0.5 rounded border"
             [ngClass]="getPriorityClasses(task.priority)"

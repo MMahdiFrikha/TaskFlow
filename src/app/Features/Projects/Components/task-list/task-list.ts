@@ -4,18 +4,29 @@ import { Task, TaskPriority, TaskStatus } from '../../Models/task.model';
 import { TruncatePipe } from '../../shared/pipes/truncate-pipe'; 
 import { DeadlinePipe } from '../../shared/pipes/deadline-pipe';
 import { InitialsPipe } from '../../shared/pipes/initials-pipe';
+import { HighlightDirective } from '../../shared/directives/highlight';
+import { OverdueDirective } from '../../shared/directives/overdue'; 
+import { TooltipDirective } from '../../shared/directives/tooltip';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, TruncatePipe, DeadlinePipe, InitialsPipe], // <-- Tous les pipes importés ici
+  imports: [
+    CommonModule,
+    TruncatePipe,
+    DeadlinePipe,
+    InitialsPipe,
+    HighlightDirective,
+    OverdueDirective,
+    TooltipDirective
+  ],
   templateUrl: './task-list.html',
   styleUrl: './task-list.css'
 })
 export class TaskList {
   tasks = input.required<Task[]>();
 
-  // 4. Objet de correspondance Priorité -> Couleur HEX (équivalent du rôle -> couleur)
+  // Objet de correspondance Priorité -> Couleur HEX pour ngStyle
   priorityColors: Record<TaskPriority, string> = {
     'Haute': '#ef4444',    // Rouge vif
     'Moyenne': '#f59e0b',  // Orange
@@ -26,11 +37,12 @@ export class TaskList {
     return this.priorityColors[priority] ?? '#94a3b8';
   }
 
-  // Détermine si la tâche est active (non terminée)
+  // Détermine si une tâche est active (non terminée) pour ngClass
   isTaskActive(status: TaskStatus): boolean {
     return status !== 'Terminé';
   }
 
+  // Styles de bordure et badges par statut
   getStatusTheme(status: TaskStatus) {
     switch (status) {
       case 'Terminé':
@@ -56,6 +68,7 @@ export class TaskList {
     }
   }
 
+  // Styles des badges par priorité
   getPriorityClasses(priority: TaskPriority): string {
     switch (priority) {
       case 'Haute':
